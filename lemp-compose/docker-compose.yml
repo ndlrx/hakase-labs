@@ -1,0 +1,40 @@
+nginx:
+    image: 'bitnami/nginx'
+    ports:
+        - '80:80'
+    links:
+        - phpfpm
+    volumes:
+        - ./logs/access.log:/opt/bitnami/nginx/logs/myapp-access.log
+        - ./logs/error.log:/opt/bitnami/nginx/logs/myapp-error.log
+        - ./nginx/app.conf:/bitnami/nginx/conf/vhosts/app.conf
+        - ./public:/myapps
+
+phpfpm:
+    image: 'bitnami/php-fpm'
+    ports:
+        - '9000:9000'
+    volumes:
+        - ./public:/myapps
+
+mysql:
+    image: 'mariadb'
+    ports:
+        - '3306:3306'
+    volumes:
+        - ./db-data:/var/lib/mysql
+    environment:
+        - MYSQL_ROOT_PASSWORD=hakase-labs123
+
+phpmyadmin:
+    image: 'phpmyadmin/phpmyadmin'
+    restart: always
+    ports:
+       - '8080:80'
+    links:
+        - mysql:mysql
+    environment:
+        MYSQL_USERNAME: root
+        MYSQL_ROOT_PASSWORD: hakase-labs123
+        PMA_HOST: mysql
+
